@@ -325,7 +325,7 @@ def TryJumpLocationInOpenedTab( filename, line, column ):
 
 
 # Both |line| and |column| need to be 1-based
-def JumpToLocation( filename, line = 1, column = 0):
+def JumpToLocation( filename, line = 1, column = 1, user_command = 'same_buffer'):
   # Add an entry to the jumplist
   vim.command( "normal! m'" )
 
@@ -336,7 +336,7 @@ def JumpToLocation( filename, line = 1, column = 0):
     # location, not to the start of the newly opened file.
     # Sadly this fails on random occasions and the undesired jump remains in the
     # jumplist.
-    user_command = vim.eval("get(g:, 'jumpfile_buffer_command', 'edit')")
+    # user_command = vim.eval("get(g:, 'jumpfile_buffer_command', 'edit')")
     if user_command == 'new-or-existing-tab':
       try:
         TryJumpLocationInOpenedTab( filename, line, column )

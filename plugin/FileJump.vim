@@ -79,11 +79,12 @@ else:
 EOF
 endfunction
 
-function! s:JumpToFile(filename)
+function! s:JumpToFile(filename, buffer_command)
 let header_flag = s:UserOrSystemHeader()
 python << EOF
 header_flag = int(vim.eval('header_flag'))
 filename = vim.eval('a:filename')
+buffer_command = vim.eval('a:buffer_command')
 PopulateIncludePaths()
 include_paths = ['.']
 if header_flag == 0:
@@ -94,7 +95,7 @@ elif header_flag == 1:
 real_filename = GetHeaderFilename(include_paths, filename)
 
 if real_filename:
-	fj_vimsupport.JumpToLocation(real_filename, -1, -1)
+	fj_vimsupport.JumpToLocation(real_filename, -1, -1, buffer_command)
 else:
     vim.command("echohl WarningMsg | echomsg \"FileJump: can't find such file in include path.\" | echohl None")
 EOF
@@ -107,12 +108,15 @@ print(user_defined_include_paths, system_defined_include_paths)
 EOF
 endfunction
 
-function! s:FileJump()
+function! s:FileJump(buffer_command)
 	let filename = escape(expand(expand('<cfile>')), ' ')
-	call s:JumpToFile(filename)
+	call s:JumpToFile(filename, a:buffer_command)
 endfunction
 
-command! FileJump call s:FileJump()
+command! FileJump call s:FileJump('same_buffer')
+command! FileJumpSplit call s:FileJump('horizontal-split')
+command! FileJumpVSplit call s:FileJump('vertical-split')
+command! FileJumpTabEdit call s:FileJump('new-or-existing-tab')
 command! FileJumpDebugInfo call s:DisplayIncludePaths()
 
 let &cpo = s:save_cpo
