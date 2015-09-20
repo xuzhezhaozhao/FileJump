@@ -52,7 +52,7 @@ def GetHeaderFilename(include_paths, filename):
 # find nearest file naming '.filejump'
 def FindUserFileJump():
 	current_filename = vim.eval( "expand('%:p')" )
-	return fj_utils.PathToNearestFilename( current_filename, '.filejump' )
+	return fj_utils.PathToNearestFile( current_filename, '.filejump' )
 
 # populate user_defined_include_paths and system_defined_include_paths
 # if find .filejump file, use it, otherwise use default settings

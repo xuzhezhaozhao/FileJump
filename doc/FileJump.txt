@@ -1,3 +1,15 @@
+*filejump*  FileJump: Jump to file under cursor
+
+===============================================================================
+Contents ~
+
+ 1. Introduction                                        |filejump-introduction|
+ 2. Intro                                                      |filejump-intro|
+ 3. Installation                                        |filejump-installation|
+ 4. User Guide                                            |filejump-user-guide|
+ 5. Commands                                                |filejump-commands|
+ 6. Options                                                  |filejump-options|
+
 g:jumpfile_buffer_command
 [ 'same-buffer', 'horizontal-split', 'vertical-split', 'new-tab' ]
 
@@ -6,3 +18,5 @@ g:user_defind_include_paths
 
 g:system_defind_include_paths
 ['/usr/include', '/usr/local/include']
+
+vim: ft=help

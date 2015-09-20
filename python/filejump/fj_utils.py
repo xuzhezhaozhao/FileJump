@@ -247,7 +247,7 @@ def PathToNearestThirdPartyFolder( path ):
   return None
 
 
-def PathToNearestFilename( path, filename ):
+def PathToNearestFile( path, filename ):
   for folder in AncestorFolders( path ):
     path_to_filename = os.path.join( folder, filename )
     if os.path.isfile( path_to_filename ):
