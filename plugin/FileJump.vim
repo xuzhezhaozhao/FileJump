@@ -33,10 +33,13 @@ def GetHeaderFilename(include_paths, filename):
 			return real_filename
 	return None
 
+# find nearest file naming '.filejump'
 def FindConfFilename(conf_filename):
 	current_filename = vim.eval( "expand('%:p')" )
 	return fj_utils.PathToNearestFilename( current_filename, conf_filename )
 
+# populate user_defined_include_paths and system_defined_include_paths
+# if find .filejump file, use it, otherwise use default settings
 def PopulateIncludePaths():
 	global user_defined_include_paths, system_defined_include_paths
 	user_defined_include_paths = vim.eval('g:user_defined_include_paths')
@@ -57,30 +60,47 @@ def PopulateIncludePaths():
 			system_defined_include_paths.append(path)
 EOF
 
-function! s:JumpToFile(filename)
+" -1: nothing
+"  0: user #include ""
+"  1: system #include <>
+function! s:UserOrSystemHeader()
 python << EOF
-filename = vim.eval('a:filename')
-user = True
-user_defined_include_paths = vim.eval('g:user_defined_include_paths')
-system_defined_include_paths = vim.eval('g:system_defined_include_paths')
-
-PopulateIncludePaths()
-
-include_paths = []
-if user:
-	include_paths = user_defined_include_paths + system_defined_include_paths;
+line = fj_vimsupport.CurrentLineContents().strip()
+if not line.startswith("#include"):
+	vim.command( "return -1" )
+pos1 = line.find("\"")
+pos2 = line.find("<")
+if pos1 != -1:
+	vim.command( "return 0" )
+elif pos2 != -1:
+	vim.command( "return 1" )
 else:
+	vim.command( "return -1" )
+EOF
+endfunction
+
+function! s:JumpToFile(filename)
+let header_flag = s:UserOrSystemHeader()
+python << EOF
+header_flag = int(vim.eval('header_flag'))
+filename = vim.eval('a:filename')
+PopulateIncludePaths()
+include_paths = ['.']
+if header_flag == 0:
+	include_paths = user_defined_include_paths + system_defined_include_paths;
+elif header_flag == 1:
 	include_paths = system_defined_include_paths + user_defined_include_paths;
 
 real_filename = GetHeaderFilename(include_paths, filename)
 
 if real_filename:
-	fj_vimsupport.JumpToLocation(real_filename, 1, 0)
+	fj_vimsupport.JumpToLocation(real_filename, -1, -1)
 else:
-    vim.command("echohl WarningMsg | echomsg \"FileJump: No such file.\" | echohl None")
+    vim.command("echohl WarningMsg | echomsg \"FileJump: can't find such file in include path.\" | echohl None")
 EOF
 endfunction
 
+" just for debug
 function! s:DisplayIncludePaths()
 python << EOF
 print(user_defined_include_paths, system_defined_include_paths)

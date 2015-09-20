@@ -313,7 +313,8 @@ def TryJumpLocationInOpenedTab( filename, line, column ):
       if win.buffer.name == filepath:
         vim.current.tabpage = tab
         vim.current.window = win
-        vim.current.window.cursor = ( line, column - 1 )
+        if line >= 1 and column >= 1:
+          vim.current.window.cursor = ( line, column - 1 )
 
         # Center the screen on the jumped-to location
         vim.command( 'normal! zz' )
@@ -335,7 +336,7 @@ def JumpToLocation( filename, line = 1, column = 0):
     # location, not to the start of the newly opened file.
     # Sadly this fails on random occasions and the undesired jump remains in the
     # jumplist.
-    user_command = 'edit'
+    user_command = vim.eval("get(g:, 'jumpfile_buffer_command', 'edit')")
     if user_command == 'new-or-existing-tab':
       try:
         TryJumpLocationInOpenedTab( filename, line, column )
@@ -348,7 +349,8 @@ def JumpToLocation( filename, line = 1, column = 0):
       command = 'split'
     vim.command( 'keepjumps {0} {1}'.format( command,
                                              EscapedFilepath( filename ) ) )
-    vim.current.window.cursor = ( line, column - 1 )
+    if line >= 1 and column >= 1:
+      vim.current.window.cursor = ( line, column - 1 )
 
   # Center the screen on the jumped-to location
   vim.command( 'normal! zz' )

@@ -1,0 +1,8 @@
+g:jumpfile_buffer_command
+[ 'same-buffer', 'horizontal-split', 'vertical-split', 'new-tab' ]
+
+g:user_defind_include_paths
+['.']
+
+g:system_defind_include_paths
+['/usr/include', '/usr/local/include']
