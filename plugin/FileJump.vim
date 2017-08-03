@@ -85,14 +85,15 @@ python << EOF
 line = fj_vimsupport.CurrentLineContents().strip()
 if not line.startswith("#include"):
 	vim.command( "return -1" )
-pos1 = line.find("\"")
-pos2 = line.find("<")
-if pos1 != -1:
-	vim.command( "return 0" )
-elif pos2 != -1:
-	vim.command( "return 1" )
 else:
-	vim.command( "return -1" )
+	pos1 = line.find("\"")
+	pos2 = line.find("<")
+	if pos1 != -1:
+		vim.command( "return 0" )
+	elif pos2 != -1:
+		vim.command( "return 1" )
+	else:
+		vim.command( "return -1" )
 EOF
 endfunction
 
